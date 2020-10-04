@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     private TextInputEditText etNoHandphone;
     private TextInputEditText etEmail;
     //
-    private TextInputEditText etTglLahir;
+    private EditText etTglLahir;
     private RadioGroup genderRb;
     private Spinner educationSp;
     private CheckBox cbMembaca;
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         String inputEmail = etEmail.getText().toString().trim();
         String inputAlamat = etAlamat.getText().toString().trim();
         //
-        String selectedTglLahir = etTglLahir.getText().toString().trim();
+        String inputTglLahir = etTglLahir.getText().toString().trim();
 
         String selectedGender;
         if (genderRb.getCheckedRadioButtonId() == R.id.priaRb) {
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         siswa.setPhoneNumber(inputPhoneNumber);
         siswa.setEmail(inputEmail);
         //
-        siswa.setTglLahir(selectedTglLahir);
+        siswa.setTglLahir(inputTglLahir);
         siswa.setGender(selectedGender);
         siswa.setEducation(selectedEducation);
         siswa.setHoby(joinHobi);

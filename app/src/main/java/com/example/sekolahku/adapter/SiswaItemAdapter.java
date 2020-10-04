@@ -27,15 +27,17 @@ public class SiswaItemAdapter extends ArrayAdapter<Siswa> {
 
         TextView etNamaDepan = listItemView.findViewById(R.id.etNamaDepan);
         TextView genderRb = listItemView.findViewById(R.id.genderRb);
-        TextView etTglLahir = listItemView.findViewById(R.id.etTglLahir);
         TextView listItem = listItemView.findViewById(R.id.listItem);
+        TextView etNoHandphone = listItemView.findViewById(R.id.etNoHandphone);
+        TextView etTglLahir = listItemView.findViewById(R.id.etTglLahir);
 
         Siswa siswa = getItem(position);
 
         etNamaDepan.setText(siswa.getNamaDepan() + " " + siswa.getNamaBelakang());
         genderRb.setText(siswa.getGender());
-        etTglLahir.setText(siswa.getTglLahir());
+        etNoHandphone.setText(siswa.getPhoneNumber());
         listItem.setText(siswa.getEducation());
+        etTglLahir.setText("Tanggal Lahir : " + siswa.getTglLahir());
 
         return listItemView;
     }

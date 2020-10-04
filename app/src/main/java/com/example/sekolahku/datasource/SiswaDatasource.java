@@ -19,12 +19,12 @@ public class SiswaDatasource {
 // Tahap Ketiga
     private ContentValues convertToContentValues(Siswa siswa) {
         ContentValues contentValues = new ContentValues();
-
+        contentValues.put("id", siswa.getId());
         contentValues.put("namaDepan", siswa.getNamaDepan());
         contentValues.put("namaBelakang", siswa.getNamaBelakang());
         contentValues.put("phoneNumber", siswa.getPhoneNumber());
         contentValues.put("email", siswa.getEmail());
-//        contentValues.put("tglLahir", siswa.getTglLahir());
+        contentValues.put("tglLahir", siswa.getTglLahir());
         contentValues.put("gender", siswa.getGender());
         contentValues.put("education", siswa.getEducation());
         contentValues.put("hoby", siswa.getHoby());
@@ -36,15 +36,16 @@ public class SiswaDatasource {
     private Siswa convertToSiswa(Cursor cursor) {
         Siswa siswa = new Siswa();
 
-        siswa.setNamaDepan(cursor.getString(0));
-        siswa.setNamaBelakang(cursor.getString(1));
-        siswa.setPhoneNumber(cursor.getString(2));
-        siswa.setEmail(cursor.getString(3));
-//        siswa.setTglLahir(cursor.getString(4));
-        siswa.setGender(cursor.getString(5));
-        siswa.setEducation(cursor.getString(6));
-        siswa.setHoby(cursor.getString(7));
-        siswa.setAlamat(cursor.getString(8));
+        siswa.setId(cursor.getLong(0));
+        siswa.setNamaDepan(cursor.getString(1));
+        siswa.setNamaBelakang(cursor.getString(2));
+        siswa.setPhoneNumber(cursor.getString(3));
+        siswa.setEmail(cursor.getString(4));
+        siswa.setTglLahir(cursor.getString(5));
+        siswa.setGender(cursor.getString(6));
+        siswa.setEducation(cursor.getString(7));
+        siswa.setHoby(cursor.getString(8));
+        siswa.setAlamat(cursor.getString(9));
 
         return siswa;
     }

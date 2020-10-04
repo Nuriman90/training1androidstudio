@@ -51,6 +51,12 @@
                 android:text="000000000000"
                 android:id="@+id/etTglLahir"
                 android:layout_gravity="end" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="000000000000"
+                android:id="@+id/etNoHandphone"
+                android:layout_gravity="end" />
         </LinearLayout>
 
     </LinearLayout>
