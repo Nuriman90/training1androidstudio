@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -21,15 +23,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListMainActivity extends AppCompatActivity {
-//    Tahap Pertama
+
+    // Tahap Pertama
     private ListView siswaLv;
     private SiswaItemAdapter adapter;
-// Tahap Kedua
+
+    // Tahap Kedua
     private void showToast (String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG)
                 .show();
     }
-// Tahap Ketiga
+
+    // Code Pindah Ke Detail
+    private void starDetailActivity(int position ) {
+        Intent intent = new Intent(this, MainActivity.class);
+
+        Siswa selectedSiswa = adapter.getItem(position);
+        intent.putExtra("id siswa", selectedSiswa.getId());
+
+        startActivity(intent);
+    }
+    // Tahap Ketiga
     private void loadDataSiswa() {
         try {
             DatabaseHelper databaseHelper = new DatabaseHelper(this);
@@ -46,6 +60,13 @@ public class ListMainActivity extends AppCompatActivity {
 //            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, siswaNames);
             siswaLv.setAdapter(adapter);
 
+            siswaLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    starDetailActivity(position);
+                }
+            });
+
             showToast("Data Loaded Successfully");
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,11 +74,13 @@ public class ListMainActivity extends AppCompatActivity {
         }
     }
 
+
     private void startMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
+    // Action Tambah
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int selectedMenuId = item.getItemId();
@@ -84,7 +107,7 @@ public class ListMainActivity extends AppCompatActivity {
         siswaLv = findViewById(R.id.siswaLv);
     }
 
-//    Back pencet sendiri
+    // Back pencet sendiri
     @Override
     protected void onResume() {
         super.onResume();

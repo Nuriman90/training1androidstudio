@@ -73,4 +73,24 @@ public class SiswaDatasource {
 
         return foundSiswaList;
     }
+
+    public Siswa findById(long id) {
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery("SELECT *FROM siswa WHERE id=?",
+                new String[] { String.valueOf(id)});
+
+        boolean found = cursor.getCount() > 0;
+
+        if (found) {
+            cursor.moveToNext();
+            Siswa siswa = convertToSiswa(cursor);
+
+            cursor.close();
+            database.close();
+
+            return siswa;
+        } else {
+            throw new RuntimeException("Data Siswa dengan id " + id + "tidak ditemukan");
+        }
+    }
 }

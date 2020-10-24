@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     private TextInputEditText etNamaBelakang;
     private TextInputEditText etNoHandphone;
     private TextInputEditText etEmail;
-    //
     private EditText etTglLahir;
     private RadioGroup genderRb;
     private Spinner educationSp;
@@ -46,6 +45,29 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void loadDetailDataSiswa(long idSiswa) {
+        try {
+            DatabaseHelper databaseHelper = new DatabaseHelper(this);
+            SiswaDatasource datasource = new SiswaDatasource(databaseHelper);
+            Siswa siswa = datasource.findById(idSiswa);
+
+            etNamaDepan.setText(siswa.getNamaDepan());
+            etNamaBelakang.setText(siswa.getNamaBelakang());
+            etNoHandphone.setText(siswa.getPhoneNumber());
+            etAlamat.setText(siswa.getAlamat());
+            etEmail.setText(siswa.getEmail());
+            etTglLahir.setText(siswa.getTglLahir());
+//            genderRb.check(siswa.getGender());
+//            CheckBox.setText(siswa.getHoby());
+//            educationSp.setText(siswa.getEducation());
+//
+
+            showToast("Data Siswa Berhasil Di Load");
+        } catch (Exception e) {
+            showToast(e.getMessage());
+        }
     }
 
     // Tahap Keempat
@@ -62,17 +84,17 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         if (genderRb.getCheckedRadioButtonId() == R.id.priaRb) {
             selectedGender = "Pria";
         } else {
-            selectedGender= "Wanita";
+            selectedGender = "Wanita";
         }
-        
+
         List<String> selectedHobies = new ArrayList<>();
-        if ( cbMembaca.isChecked()) {
+        if (cbMembaca.isChecked()) {
             selectedHobies.add("Membaca");
         }
-        if ( cbMenulis.isChecked()) {
+        if (cbMenulis.isChecked()) {
             selectedHobies.add("Menulis");
         }
-        if ( cbMenggambar.isChecked()) {
+        if (cbMenggambar.isChecked()) {
             selectedHobies.add("Membaca");
         }
         String joinHobi = TextUtils.join(",", selectedHobies);
@@ -112,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     }
 
     //        Action agar icon back fungsi Step 2
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int selectedMenuId = item.getItemId();
@@ -131,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         setContentView(R.layout.activity_main);
 //        Agar muncul icon back Step 1
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    // Tahap Ketiga
+        // Tahap Ketiga
         etNamaDepan = findViewById(R.id.etNamaDepan);
         etNamaBelakang = findViewById(R.id.etNamaBelakang);
         etNoHandphone = findViewById(R.id.etNoHandphone);
@@ -143,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         cbMembaca = findViewById(R.id.cbMembaca);
         cbMenulis = findViewById(R.id.cbMenulis);
         cbMenggambar = findViewById(R.id.cbMenggambar);
-        etAlamat= findViewById(R.id.etAlamat);
+        etAlamat = findViewById(R.id.etAlamat);
         MaterialButton saveBtn = findViewById(R.id.saveBtn);
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
@@ -159,6 +180,13 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                 showDatePickerDialog();
             }
         });
+
+        long receivedIdSiswa = getIntent().getLongExtra("id siswa", -1);
+        if (receivedIdSiswa == -1) {
+            showToast("Tidak menerima id siswa");
+        } else {
+            loadDetailDataSiswa(receivedIdSiswa);
+        }
     }
 
     private void showDatePickerDialog() {
