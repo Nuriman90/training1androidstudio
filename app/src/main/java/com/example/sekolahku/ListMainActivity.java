@@ -3,15 +3,20 @@ package com.example.sekolahku;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuItemCompat;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.sekolahku.adapter.SiswaItemAdapter;
@@ -23,7 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListMainActivity extends AppCompatActivity {
-
+    protected Cursor cursor;
+    DatabaseHelper databaseHelper;
     // Tahap Pertama
     private ListView siswaLv;
     private SiswaItemAdapter adapter;
@@ -36,6 +42,15 @@ public class ListMainActivity extends AppCompatActivity {
 
     // Code Pindah Ke Detail
     private void starDetailActivity(int position ) {
+        Intent intent = new Intent(this, DetailActivity.class);
+
+        Siswa selectedSiswa = adapter.getItem(position);
+        intent.putExtra("id siswa", selectedSiswa.getId());
+
+        startActivity(intent);
+    }
+    // Code Pindah Ke Detail
+    private void starFormDetailActivity(int position ) {
         Intent intent = new Intent(this, MainActivity.class);
 
         Siswa selectedSiswa = adapter.getItem(position);
@@ -80,6 +95,7 @@ public class ListMainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
     // Action Tambah
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -91,10 +107,48 @@ public class ListMainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Tambahin Menu Java
+    private void delete(Siswa siswa) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(this);
+        SiswaDatasource datasource = new SiswaDatasource(databaseHelper);
+        datasource.remove(siswa);
+        adapter.notifyDataSetChanged();
+    }
+
+    // Edit and Delete
+    @Override
+    public void onCreateContextMenu (ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            getMenuInflater().inflate(R.menu.menu_context, menu);
+            super.onCreateContextMenu(menu, v, menuInfo);
+}
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int selectedPosition = info.position;
+
+        switch (id) {
+            case R.id.action_delete:
+                delete(adapter.getItem(selectedPosition));
+                Intent intent = new Intent(ListMainActivity.this, ListMainActivity.class);
+                startActivity(intent);
+                Toast.makeText(this,"Delete Sukses", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id. action_edit:
+                starFormDetailActivity(selectedPosition);
+                break;
+        }
+
+        return super.onContextItemSelected(item);
+    }
+
+    // Tambahin Menu Pojok Kanan
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // Icon Search
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+        // Icon Add
         getMenuInflater().inflate(R.menu.menu_list_activity, menu);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -105,6 +159,7 @@ public class ListMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_main);
 
         siswaLv = findViewById(R.id.siswaLv);
+        registerForContextMenu(siswaLv);
     }
 
     // Back pencet sendiri

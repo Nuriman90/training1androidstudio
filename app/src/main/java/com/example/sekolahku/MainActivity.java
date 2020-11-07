@@ -9,12 +9,14 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.example.sekolahku.datasource.DatabaseHelper;
@@ -42,6 +44,9 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     private CheckBox cbMenulis;
     private CheckBox cbMenggambar;
     private TextInputEditText etAlamat;
+    private Button btnUpdates;
+
+    private Siswa receivedSiswa;
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             DatabaseHelper databaseHelper = new DatabaseHelper(this);
             SiswaDatasource datasource = new SiswaDatasource(databaseHelper);
             Siswa siswa = datasource.findById(idSiswa);
+            receivedSiswa = datasource.findById(idSiswa);
 
             etNamaDepan.setText(siswa.getNamaDepan());
             etNamaBelakang.setText(siswa.getNamaBelakang());
@@ -59,10 +65,30 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             etAlamat.setText(siswa.getAlamat());
             etEmail.setText(siswa.getEmail());
             etTglLahir.setText(siswa.getTglLahir());
-//            genderRb.check(siswa.getGender());
-//            CheckBox.setText(siswa.getHoby());
-//            educationSp.setText(siswa.getEducation());
-//
+
+            String gender = siswa.getGender();
+            if (gender.equals("Pria")) {
+                genderRb.check(R.id.priaRb);
+            } else {
+                genderRb.check(R.id.wanitaRb);
+            }
+            ;
+            // Tenari Operator hanya berlaku jika logika nya adalah if dan else
+            // int selectedId = (gender.equals("Pria")) ? R.id.priaRb : R.id.wanitaRb;
+            // genderRb.check(selectedId);
+
+            String hobi = receivedSiswa.getHoby();
+            cbMembaca.setChecked(hobi.contains("Membaca"));
+            cbMenulis.setChecked(hobi.contains("Menulis"));
+            cbMenggambar.setChecked(hobi.contains("Menggambar"));
+
+            SpinnerAdapter adapter = educationSp.getAdapter();
+            if (adapter instanceof ArrayAdapter) {
+                int position = ((ArrayAdapter) adapter).getPosition(siswa.getEducation());
+                educationSp.setSelection(position);
+            }
+
+            btnUpdates.setText("Updates");
 
             showToast("Data Siswa Berhasil Di Load");
         } catch (Exception e) {
@@ -70,8 +96,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         }
     }
 
-    // Tahap Keempat
-    private void save() {
+    private void initDataSiswa(Siswa siswa) {
         String inputNamaDepan = etNamaDepan.getText().toString().trim();
         String inputNamaBelakang = etNamaBelakang.getText().toString().trim();
         String inputPhoneNumber = etNoHandphone.getText().toString().trim();
@@ -100,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         String joinHobi = TextUtils.join(",", selectedHobies);
         String selectedEducation = educationSp.getSelectedItem().toString();
 
-        Siswa siswa = new Siswa();
         siswa.setNamaDepan(inputNamaDepan);
         siswa.setNamaBelakang(inputNamaBelakang);
         siswa.setPhoneNumber(inputPhoneNumber);
@@ -112,6 +136,11 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         siswa.setHoby(joinHobi);
         siswa.setAlamat(inputAlamat);
 
+    }
+
+    private void addNewSiswa() {
+        Siswa siswa = new Siswa();
+        initDataSiswa(siswa);
 
         try {
             DatabaseHelper databaseHelper = new DatabaseHelper(this);
@@ -133,7 +162,39 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 //                "Alamat :" + siswa.getAlamat());
     }
 
-    //        Action agar icon back fungsi Step 2
+    private void updateSiswa() {
+        initDataSiswa(receivedSiswa);
+
+        try {
+            DatabaseHelper databaseHelper = new DatabaseHelper(this);
+            SiswaDatasource datasource = new SiswaDatasource(databaseHelper);
+            datasource.update(receivedSiswa);
+            showToast("SUKSES");
+//            Agar automatic ke form
+            finish();
+        } catch (Exception e) {
+            showToast(e.getMessage());
+        }
+//
+//        showToast("Hi, " + siswa.getNamaDepan() + " " + siswa.getNamaBelakang() +"\n" +
+//                "Phone Number :" + siswa.getPhoneNumber() + "\n" +
+//                "Email :" + siswa.getEmail() + "\n" +
+//                "Gender :" + siswa.getGender() + "\n" +
+//                "Education :" + siswa.getEducation() + "\n" +
+//                "Hobi :" + siswa.getHoby() + "\n" +
+//                "Alamat :" + siswa.getAlamat());
+    }
+
+    //  Tahap Keempat
+    private void save() {
+        if (receivedSiswa != null) {
+            updateSiswa();
+        } else {
+            addNewSiswa();
+        }
+    }
+
+    //  Action agar icon back fungsi Step 2
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int selectedMenuId = item.getItemId();
@@ -157,7 +218,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         etNamaBelakang = findViewById(R.id.etNamaBelakang);
         etNoHandphone = findViewById(R.id.etNoHandphone);
         etEmail = findViewById(R.id.etEmail);
-        //
         etTglLahir = findViewById(R.id.etTglLahir);
         genderRb = findViewById(R.id.genderRb);
         educationSp = findViewById(R.id.listItem);
@@ -165,12 +225,23 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         cbMenulis = findViewById(R.id.cbMenulis);
         cbMenggambar = findViewById(R.id.cbMenggambar);
         etAlamat = findViewById(R.id.etAlamat);
+        btnUpdates = findViewById(R.id.saveBtn);
         MaterialButton saveBtn = findViewById(R.id.saveBtn);
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                save();
+                String etNoHandphone1 = etNoHandphone.getText().toString();
+                String etEmail1 = etEmail.getText().toString();
+
+                if (etNoHandphone1.equals("")) {
+                    etNoHandphone.setError("qweqweqw");
+                } else if (etEmail1.equals("")) {
+                    Toast.makeText(MainActivity.this, "Pass daskdaisn", Toast.LENGTH_SHORT).show();
+                }
+                {
+                    save();
+                }
             }
         });
 

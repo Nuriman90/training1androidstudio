@@ -93,4 +93,21 @@ public class SiswaDatasource {
             throw new RuntimeException("Data Siswa dengan id " + id + "tidak ditemukan");
         }
     }
+
+    public void update(Siswa siswa) {
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        ContentValues contentValues = convertToContentValues(siswa);
+        database.update("siswa", contentValues, "id=?", new String[] {
+                String.valueOf(siswa.getId())
+        });
+        database.close();
+    }
+
+    public void remove (Siswa siswa) {
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        database.delete("siswa","id=?", new
+                String[]{Long.toString(siswa.getId())});
+        database.close();
+    }
+
 }
